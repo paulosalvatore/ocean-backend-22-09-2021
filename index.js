@@ -1,79 +1,81 @@
+const { MongoClient, ObjectId } = require("mongodb");
 const express = require("express");
 const app = express();
 
-// Sinalizamos para o Express que todo body da requisição
-// estará estruturado em JSON
-app.use(express.json());
+(async () => {
+    // Sinalizamos para o Express que todo body da requisição
+    // estará estruturado em JSON
+    app.use(express.json());
 
-app.get("/", function (req, res) {
-    res.send("Hello World");
-});
+    app.get("/", function (req, res) {
+        res.send("Hello World");
+    });
 
-// CRUD -> Create, Read (All & Single/byId), Update, Delete
+    // CRUD -> Create, Read (All & Single/byId), Update, Delete
 
-// "CRUD em memória"
+    // "CRUD em memória"
 
-// Lista de textos (strings)
-const lista = [
-    {
-        id: 1,
-        nome: "Rick Sanchez",
-    },
-    {
-        id: 2,
-        nome: "Morty Smith",
-    },
-];
+    // Lista de textos (strings)
+    const lista = [
+        {
+            id: 1,
+            nome: "Rick Sanchez",
+        },
+        {
+            id: 2,
+            nome: "Morty Smith",
+        },
+    ];
 
-// [GET] /personagens
-// Read All
-app.get("/personagens", function (req, res) {
-    res.send(lista);
-});
+    // [GET] /personagens
+    // Read All
+    app.get("/personagens", function (req, res) {
+        res.send(lista);
+    });
 
-function findById(id) {
-    return lista.find(elemento => elemento.id === id);
-}
-
-// [GET] /personagens/:id
-// Read By Id
-app.get("/personagens/:id", function (req, res) {
-    const id = +req.params.id;
-
-    const item = findById(id);
-
-    if (!item) {
-        res.status(404).send("Personagem não encontrado.");
-
-        return;
+    function findById(id) {
+        return lista.find(elemento => elemento.id === id);
     }
 
-    res.send(item);
-});
+    // [GET] /personagens/:id
+    // Read By Id
+    app.get("/personagens/:id", function (req, res) {
+        const id = +req.params.id;
 
-// [POST] /personagens
-// Create
-app.post("/personagens", function (req, res) {
-    // Obtém o corpo da requisição e coloca na variável item
-    const item = req.body;
+        const item = findById(id);
 
-    if (!item) {
-        res.status(400).send(
-            "Chave 'nome' não foi encontrada no corpo da requisição."
-        );
+        if (!item) {
+            res.status(404).send("Personagem não encontrado.");
 
-        return;
-    }
+            return;
+        }
 
-    item.id = lista.push(item);
+        res.send(item);
+    });
 
-    res.status(201).send(item);
-});
+    // [POST] /personagens
+    // Create
+    app.post("/personagens", function (req, res) {
+        // Obtém o corpo da requisição e coloca na variável item
+        const item = req.body;
 
-// [PUT] /personagens/:id
-// Update
-app.put("/personagens/:id", function (req, res) {
-    /*
+        if (!item) {
+            res.status(400).send(
+                "Chave 'nome' não foi encontrada no corpo da requisição."
+            );
+
+            return;
+        }
+
+        item.id = lista.push(item);
+
+        res.status(201).send(item);
+    });
+
+    // [PUT] /personagens/:id
+    // Update
+    app.put("/personagens/:id", function (req, res) {
+        /*
     Objetivo: Atualizar uma personagem
     Passos:
     - Pegar o ID dessa personagem
@@ -82,53 +84,54 @@ app.put("/personagens/:id", function (req, res) {
     - Exibir que deu certo
     */
 
-    const id = +req.params.id;
+        const id = +req.params.id;
 
-    const itemEncontrado = findById(id);
+        const itemEncontrado = findById(id);
 
-    if (!itemEncontrado) {
-        res.status(404).send("Personagem não encontrado.");
+        if (!itemEncontrado) {
+            res.status(404).send("Personagem não encontrado.");
 
-        return;
-    }
+            return;
+        }
 
-    const novoItem = req.body;
+        const novoItem = req.body;
 
-    if (!novoItem || !novoItem.nome) {
-        res.status(400).send(
-            "Chave 'nome' não foi encontrada no corpo da requisição."
-        );
+        if (!novoItem || !novoItem.nome) {
+            res.status(400).send(
+                "Chave 'nome' não foi encontrada no corpo da requisição."
+            );
 
-        return;
-    }
+            return;
+        }
 
-    const index = lista.indexOf(itemEncontrado);
+        const index = lista.indexOf(itemEncontrado);
 
-    novoItem.id = id;
+        novoItem.id = id;
 
-    lista[index] = novoItem;
+        lista[index] = novoItem;
 
-    res.send("Personagem atualizada com sucesso!");
-});
+        res.send("Personagem atualizada com sucesso!");
+    });
 
-// [DELETE] /personagens/:id
-// Delete
-app.delete("/personagens/:id", function (req, res) {
-    const id = +req.params.id;
+    // [DELETE] /personagens/:id
+    // Delete
+    app.delete("/personagens/:id", function (req, res) {
+        const id = +req.params.id;
 
-    const itemEncontrado = findById(id);
+        const itemEncontrado = findById(id);
 
-    if (!itemEncontrado) {
-        res.status(404).send("Personagem não encontrado.");
+        if (!itemEncontrado) {
+            res.status(404).send("Personagem não encontrado.");
 
-        return;
-    }
+            return;
+        }
 
-    const index = lista.indexOf(itemEncontrado);
+        const index = lista.indexOf(itemEncontrado);
 
-    lista.splice(index, 1);
+        lista.splice(index, 1);
 
-    res.send("Personagem removida com sucesso!");
-});
+        res.send("Personagem removida com sucesso!");
+    });
 
-app.listen(3000);
+    app.listen(3000);
+})();
