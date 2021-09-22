@@ -44,13 +44,13 @@ const app = express();
     });
 
     function findById(id) {
-        return lista.find(elemento => elemento.id === id);
+        return collection.findOne({ _id: new ObjectId(id) });
     }
 
     // [GET] /personagens/:id
     // Read By Id
-    app.get("/personagens/:id", function (req, res) {
-        const id = +req.params.id;
+    app.get("/personagens/:id", async function (req, res) {
+        const id = req.params.id;
 
         const item = findById(id);
 
