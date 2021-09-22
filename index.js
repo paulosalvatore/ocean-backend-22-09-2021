@@ -3,6 +3,15 @@ const express = require("express");
 const app = express();
 
 (async () => {
+    const url = "mongodb://localhost:27017";
+    const dbName = "ocean_bancodados_22_09_2021";
+
+    const client = await MongoClient.connect(url);
+
+    const db = client.db(dbName);
+
+    const collection = db.collection("personagens");
+
     // Sinalizamos para o Express que todo body da requisição
     // estará estruturado em JSON
     app.use(express.json());
@@ -29,8 +38,9 @@ const app = express();
 
     // [GET] /personagens
     // Read All
-    app.get("/personagens", function (req, res) {
-        res.send(lista);
+    app.get("/personagens", async function (req, res) {
+        const listaPersonagens = await collection.find().toArray();
+        res.send(listaPersonagens);
     });
 
     function findById(id) {
