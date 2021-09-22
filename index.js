@@ -52,7 +52,7 @@ const app = express();
     app.get("/personagens/:id", async function (req, res) {
         const id = req.params.id;
 
-        const item = findById(id);
+        const item = await findById(id);
 
         if (!item) {
             res.status(404).send("Personagem não encontrado.");
